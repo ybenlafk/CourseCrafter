@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = "debian-openssl-3.0.x"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Formation {
+  id        Int        @id @default(autoincrement())
+  name      String?
+  matiers Matier[]
+}
+
+model Matier {
+  id          Int        @id @default(autoincrement())
+  name        String?
+  formation_id    Int? @default(1)
+  formation       Formation?      @relation(fields: [formation_id], references: [id])
+  groups Group[]
+}
+model Proffisour {
+  id        Int        @id @default(autoincrement())
+  name      String?
+  groups Group[]
+}
+
+model Group {
+  id        Int        @id @default(autoincrement())
+  duree     Int?
+  date      String?
+  level     String?
+  matiers_id Int? @default(1)
+  prof_id   Int? @default(1)
+  matiers Matier?      @relation(fields: [matiers_id], references: [id])
+  prof   Proffisour?      @relation(fields: [prof_id], references: [id])
+  etudiants Etudiant[]
+}
+
+model Etudiant {
+  id          Int        @id @default(autoincrement())
+  email       String     @unique
+  name        String?
+  username    String?
+  code_postal Int?
+  date_nes    String?
+  nb_pre      Int?  @default(0)
+  price       Int?  @default(0)
+  group_id    Int?  @default(1)
+  group       Group?      @relation(fields: [group_id], references: [id])
+}
